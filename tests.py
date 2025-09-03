@@ -1,11 +1,6 @@
 import pytest
 from main import BooksCollector
 
-# общий фикстур: новый объект для каждого теста
-@pytest.fixture
-def collector():
-    return BooksCollector()
-
 class TestBooksCollector:
 
     # --- add_new_book ---
@@ -81,3 +76,28 @@ class TestBooksCollector:
         collector.delete_book_from_favorites("Веселье")
         collector.delete_book_from_favorites("Веселье")  # повтор — без ошибки
         assert collector.get_list_of_favorites_books() == []
+
+    def test_get_book_genre_returns_set_genre(self, collector):
+        collector.add_new_book("Книга")
+        collector.set_book_genre("Книга", "Фантастика")
+        assert collector.get_book_genre("Книга") == "Фантастика"
+
+    def test_add_book_in_favorites_adds_book_once(self, collector):
+        collector.add_new_book("Книга")
+        collector.add_book_in_favorites("Книга")
+        collector.add_book_in_favorites("Книга")  # повтор игнорируется
+        assert collector.get_list_of_favorites_books() == ["Книга"]
+
+    def test_delete_book_from_favorites_removes_book(self, collector):
+        collector.add_new_book("Книга")
+        collector.add_book_in_favorites("Книга")
+        collector.delete_book_from_favorites("Книга")
+        assert collector.get_list_of_favorites_books() == []
+
+    def test_get_list_of_favorites_books_returns_current_list(self, collector):
+        collector.add_new_book("К1")
+        collector.add_new_book("К2")
+        collector.add_book_in_favorites("К1")
+        collector.add_book_in_favorites("К2")
+        assert collector.get_list_of_favorites_books() == ["К1", "К2"]
+
